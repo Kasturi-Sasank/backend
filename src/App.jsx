@@ -3,25 +3,34 @@ import { AnimatePresence } from 'framer-motion'
 import HeartCursor from './components/HeartCursor'
 import LandingPage from './components/LandingPage'
 import MainExperience from './components/MainExperience'
+import SurpriseLoading from './components/SurpriseLoading'
 
 export default function App() {
-  const [giftOpen, setGiftOpen] = useState(false)
+  const [stage, setStage] = useState('landing') // 'landing' | 'loading' | 'main'
 
   return (
     <>
       <HeartCursor enabled={true} />
       <AnimatePresence mode="wait">
-        {!giftOpen ? (
+        {stage === 'landing' && (
           <LandingPage
             key="landing"
             onOpenGift={() => {
-              setGiftOpen(true)
               window.scrollTo({ top: 0, behavior: 'instant' })
+              setStage('loading')
             }}
           />
-        ) : (
-          <MainExperience key="main" />
         )}
+        {stage === 'loading' && (
+          <SurpriseLoading
+            key="loading"
+            onDone={() => {
+              window.scrollTo({ top: 0, behavior: 'instant' })
+              setStage('main')
+            }}
+          />
+        )}
+        {stage === 'main' && <MainExperience key="main" />}
       </AnimatePresence>
     </>
   )
