@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { HER_NAME } from '../constants/content'
 
@@ -10,11 +10,19 @@ const NO_MESSAGES = [
 export default function LandingPage({ onOpenGift }) {
   const [noCount, setNoCount] = useState(0)
   const [sad, setSad] = useState(false)
+  const hideTimer = useRef(null)
+
+  useEffect(() => {
+    return () => {
+      if (hideTimer.current) clearTimeout(hideTimer.current)
+    }
+  }, [])
 
   const handleNo = () => {
+    if (hideTimer.current) clearTimeout(hideTimer.current)
     setSad(true)
     setNoCount((c) => c + 1)
-    setTimeout(() => setSad(false), 1800)
+    hideTimer.current = setTimeout(() => setSad(false), 1800)
   }
 
   const showNo = noCount < 3
@@ -89,7 +97,7 @@ export default function LandingPage({ onOpenGift }) {
 
 
 
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="popLayout">
             {sad && noCount > 0 && (
               <motion.p
                 key={`sad-${noCount}`}
@@ -98,6 +106,7 @@ export default function LandingPage({ onOpenGift }) {
                 initial={{ opacity: 0, scale: 0.9, y: 6 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.22 }}
               >
                 {sadMsg}
               </motion.p>
